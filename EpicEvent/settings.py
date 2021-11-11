@@ -83,7 +83,7 @@ DATABASES = {
         'USER': 'ddrdv',
         'PASSWORD': os.getenv('DB_PASSWORD'),
         'HOST': 'localhost',
-        'PORT': '5000'
+        'PORT': '5432'
     }
 }
 
