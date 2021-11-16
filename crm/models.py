@@ -13,7 +13,7 @@ class ManagementTeamMember(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.employee.first_name} {self.employee.last_name}"
+        return f"{self.employee.last_name} {self.employee.first_name}"
 
 
 class SalesTeamMember(models.Model):
@@ -24,7 +24,7 @@ class SalesTeamMember(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.employee.first_name} {self.employee.last_name}"
+        return f"{self.employee.last_name} {self.employee.first_name}"
 
 
 class SupportTeamMember(models.Model):
@@ -35,7 +35,7 @@ class SupportTeamMember(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.employee.first_name} {self.employee.last_name}"
+        return f"{self.employee.last_name} {self.employee.first_name}"
 
 
 class Client(models.Model):
@@ -47,14 +47,17 @@ class Client(models.Model):
     mobile = models.CharField('Mobile', max_length=20)
     company_name = models.CharField('Company name', max_length=250)
     date_created = models.DateTimeField(auto_now_add=True)
-    date_updated = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
     sales_contact = models.ForeignKey(to=SalesTeamMember,
                                       default=None,
                                       on_delete=models.CASCADE,
                                       )
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name}"
+        return f"{self.last_name} {self.first_name}"
+
+    class Meta:
+        ordering = ["last_name"]
 
 
 class Contract(models.Model):
@@ -65,10 +68,13 @@ class Contract(models.Model):
                                on_delete=models.PROTECT,
                                )
     date_created = models.DateTimeField(auto_now_add=True)
-    date_updated = models.DateTimeField(auto_now_add=True)
-    status = models.BooleanField()
+    date_updated = models.DateTimeField(auto_now=True)
+    status = models.BooleanField(null=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    payment_due = models.DateField()
+    payment_due = models.DateTimeField()
+
+    class Meta:
+        ordering = ["client"]
 
 
 class EventStatus(models.Model):
@@ -76,7 +82,13 @@ class EventStatus(models.Model):
     status = models.CharField(max_length=15,
                               choices=STATUS_CHOICES,
                               default="upcoming")
-    notes = models.TextField()
+    notes = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.status
+
+    class Meta:
+        verbose_name_plural = "Event status"
 
 
 class Event(models.Model):
@@ -84,7 +96,7 @@ class Event(models.Model):
     client = models.ForeignKey(to=Client,
                                on_delete=models.PROTECT)
     date_created = models.DateTimeField(auto_now_add=True)
-    date_updated = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
     support_contact = models.ForeignKey(to=SupportTeamMember,
                                         on_delete=models.CASCADE,
                                         blank=True,
@@ -96,4 +108,10 @@ class Event(models.Model):
     attendees = models.IntegerField(blank=True, null=True)
     event_date = models.DateTimeField()
     notes = models.TextField()
+
+    class Meta:
+        ordering = ["event_date"]
+
+    def get_absolute_url(self):
+        pass
 
