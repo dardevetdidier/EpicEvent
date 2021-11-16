@@ -10,7 +10,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class SalesTeamMemberSerializer(serializers.ModelSerializer):
-    employee = UserSerializer(many=True, read_only=True)
+    employee = UserSerializer()
 
     class Meta:
         model = SalesTeamMember
@@ -18,7 +18,7 @@ class SalesTeamMemberSerializer(serializers.ModelSerializer):
 
 
 class ManagementTeamMemberSerializer(serializers.ModelSerializer):
-    employee = UserSerializer(many=True, read_only=True)
+    employee = UserSerializer()
 
     class Meta:
         model = ManagementTeamMember
@@ -26,7 +26,7 @@ class ManagementTeamMemberSerializer(serializers.ModelSerializer):
 
 
 class SupportTeamMemberSerializer(serializers.ModelSerializer):
-    employee = UserSerializer(many=True, read_only=True)
+    employee = UserSerializer()
 
     class Meta:
         model = SupportTeamMember
@@ -34,7 +34,7 @@ class SupportTeamMemberSerializer(serializers.ModelSerializer):
 
 
 class ClientSerializer(serializers.ModelSerializer):
-    sales_contact = SalesTeamMemberSerializer(many=True, read_only=True)
+    # sales_contact = SalesTeamMemberSerializer()
 
     class Meta:
         model = Client
@@ -48,9 +48,9 @@ class EventStatusSerializer(serializers.ModelSerializer):
 
 
 class EventSerializer(serializers.ModelSerializer):
-    client = ClientSerializer(many=True, read_only=True)
-    support_contact = SupportTeamMemberSerializer(many=True, read_only=True)
-    event_status = EventStatusSerializer(many=True, read_only=True)
+    client = ClientSerializer()
+    support_contact = SupportTeamMemberSerializer()
+    event_status = EventStatusSerializer()
 
     class Meta:
         model = Event
@@ -58,8 +58,8 @@ class EventSerializer(serializers.ModelSerializer):
 
 
 class ContractSerializer(serializers.ModelSerializer):
-    sales_contact = SalesTeamMemberSerializer(many=True, read_only=True)
-    client = ClientSerializer(many=True, read_only=True)
+    sales_contact = SalesTeamMemberSerializer()
+    client = ClientSerializer()
 
     class Meta:
         model = Contract

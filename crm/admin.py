@@ -7,19 +7,19 @@ class UserAdmin(admin.ModelAdmin):
     list_display = ['last name', 'first_name', 'username', 'email']
 
 
-# @admin.register(SalesTeamMember)
-# class SalesTeamAdmin(admin.ModelAdmin):
-#     list_display = ['id', 'employee', 'date_created']
-#
-#
-# @admin.register(SupportTeamMember)
-# class SupportTeamAdmin(admin.ModelAdmin):
-#     list_display = ['id', 'employee', 'date_created']
-#
-#
-# @admin.register(ManagementTeamMember)
-# class ManagementTeamAdmin(admin.ModelAdmin):
-#     list_display = ['id', 'employee', 'date_created']
+@admin.register(SalesTeamMember)
+class SalesTeamAdmin(admin.ModelAdmin):
+    list_display = ['id', 'employee', 'date_created']
+
+
+@admin.register(SupportTeamMember)
+class SupportTeamAdmin(admin.ModelAdmin):
+    list_display = ['id', 'employee', 'date_created']
+
+
+@admin.register(ManagementTeamMember)
+class ManagementTeamAdmin(admin.ModelAdmin):
+    list_display = ['id', 'employee', 'date_created']
 
 
 @admin.register(Client)
@@ -75,9 +75,9 @@ class EventAdmin(admin.ModelAdmin):
     list_per_page = 10
 
 
-admin.site.register(ManagementTeamMember)
-admin.site.register(SalesTeamMember)
-admin.site.register(SupportTeamMember)
+# admin.site.register(ManagementTeamMember)
+# admin.site.register(SalesTeamMember)
+# admin.site.register(SupportTeamMember)
 # admin.site.register(Client)
 # admin.site.register(Contract)
 admin.site.register(EventStatus)

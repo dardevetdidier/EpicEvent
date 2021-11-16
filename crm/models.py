@@ -112,6 +112,4 @@ class Event(models.Model):
     class Meta:
         ordering = ["event_date"]
 
-    def get_absolute_url(self):
-        pass
 
