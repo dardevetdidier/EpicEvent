@@ -1,15 +1,23 @@
 from django.http import Http404
-from django.shortcuts import render
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from crm.models import Client, Contract
-from crm.serializers import ClientSerializer, ContractSerializer
+from crm.models import Client, Contract, Event
+from crm.serializers import ClientSerializer, ContractSerializer, EventSerializer
 
 
 def get_object(element, pk):
+    """Get the object wich matches with the model and the id"
+
+    :param element:
+        model
+    :param pk:
+        int: id of the object
+    :return:
+        objet which matches with pk
+    """
     try:
         return element.objects.get(pk=pk)
     except element.DoesNotExist:
@@ -34,7 +42,6 @@ class ClientList(APIView):
 
 class ClientDetail(APIView):
     """Retrieve, update and delete a client instance"""
-
     def get(self, request, pk):
         client = get_object(Client, pk)
         serializer = ClientSerializer(client)
@@ -71,7 +78,6 @@ class ContractList(APIView):
 
 class ContractDetail(APIView):
     """Retrieve, update or delete a contract instance"""
-
     def get(self, request, pk):
         contract = get_object(Contract, pk)
         serializer = ContractSerializer(contract)
@@ -90,3 +96,38 @@ class ContractDetail(APIView):
         contract.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
+class EventList(APIView):
+    """List of all events, or create a new event"""
+    def get(self, request):
+        events = Event.objects.all()
+        serializer = EventSerializer(events, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        serializer = EventSerializer(data=self.request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class EventDetail(APIView):
+    """Retrieve, update or delete an event instance"""
+    def get(self, request, pk):
+        event = get_object(Event, pk)
+        serializer = EventSerializer(event)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request, pk):
+        event = get_object(Event, pk)
+        serializer = EventSerializer(event, data=self.request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        event = get_object(Event, pk)
+        event.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

@@ -3,6 +3,18 @@ from django.contrib import admin
 from .models import ManagementTeamMember, SalesTeamMember, SupportTeamMember, Client, Contract, EventStatus, Event
 
 
+class ContractInline(admin.TabularInline):
+    model = Contract
+
+
+class ClientInline(admin.TabularInline):
+    model = Client
+
+
+class EventInline(admin.TabularInline):
+    model = Event
+
+
 class UserAdmin(admin.ModelAdmin):
     list_display = ['last name', 'first_name', 'username', 'email']
 
@@ -10,11 +22,13 @@ class UserAdmin(admin.ModelAdmin):
 @admin.register(SalesTeamMember)
 class SalesTeamAdmin(admin.ModelAdmin):
     list_display = ['id', 'employee', 'date_created']
+    inlines = [ContractInline, ClientInline, ]
 
 
 @admin.register(SupportTeamMember)
 class SupportTeamAdmin(admin.ModelAdmin):
     list_display = ['id', 'employee', 'date_created']
+    inlines = [EventInline, ]
 
 
 @admin.register(ManagementTeamMember)
@@ -36,6 +50,7 @@ class ClientAdmin(admin.ModelAdmin):
     ]
     search_fields = ["last_name", ]
     list_per_page = 10
+    inlines = [ContractInline, EventInline]
 
 
 @admin.register(Contract)
@@ -50,6 +65,7 @@ class ContractAdmin(admin.ModelAdmin):
         "payment_due",
     ]
     list_per_page = 10
+
 
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
@@ -75,10 +91,20 @@ class EventAdmin(admin.ModelAdmin):
     list_per_page = 10
 
 
+class EventStatusAdmin(admin.ModelAdmin):
+    list_display = [
+        "id",
+        "status",
+        "notes",
+    ]
+    inlines = [EventInline, ]
+
+
+
 # admin.site.register(ManagementTeamMember)
 # admin.site.register(SalesTeamMember)
 # admin.site.register(SupportTeamMember)
 # admin.site.register(Client)
 # admin.site.register(Contract)
-admin.site.register(EventStatus)
+# admin.site.register(EventStatus)
 # admin.site.register(Event)

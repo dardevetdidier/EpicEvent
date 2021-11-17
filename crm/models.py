@@ -15,6 +15,9 @@ class ManagementTeamMember(models.Model):
     def __str__(self):
         return f"{self.employee.last_name} {self.employee.first_name}"
 
+    class Meta:
+        verbose_name = "Management Team Member"
+
 
 class SalesTeamMember(models.Model):
     id = models.AutoField(auto_created=True, primary_key=True)
@@ -26,6 +29,9 @@ class SalesTeamMember(models.Model):
     def __str__(self):
         return f"{self.employee.last_name} {self.employee.first_name}"
 
+    class Meta:
+        verbose_name = "Sales Team Member"
+
 
 class SupportTeamMember(models.Model):
     id = models.AutoField(auto_created=True, primary_key=True)
@@ -36,6 +42,9 @@ class SupportTeamMember(models.Model):
 
     def __str__(self):
         return f"{self.employee.last_name} {self.employee.first_name}"
+
+    class Meta:
+        verbose_name = "Support Team Member"
 
 
 class Client(models.Model):
@@ -88,7 +97,8 @@ class EventStatus(models.Model):
         return self.status
 
     class Meta:
-        verbose_name_plural = "Event status"
+        verbose_name = "Event Status"
+        verbose_name_plural = "Event Status"
 
 
 class Event(models.Model):
@@ -108,6 +118,9 @@ class Event(models.Model):
     attendees = models.IntegerField(blank=True, null=True)
     event_date = models.DateTimeField()
     notes = models.TextField()
+
+    def __str__(self):
+        return f"Event n° {self.id}"
 
     class Meta:
         ordering = ["event_date"]
