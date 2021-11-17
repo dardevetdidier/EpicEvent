@@ -10,7 +10,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class SalesTeamMemberSerializer(serializers.ModelSerializer):
-    employee = UserSerializer()
+    employee_detail = UserSerializer(source='employee', read_only=True)
 
     class Meta:
         model = SalesTeamMember
@@ -18,7 +18,7 @@ class SalesTeamMemberSerializer(serializers.ModelSerializer):
 
 
 class ManagementTeamMemberSerializer(serializers.ModelSerializer):
-    employee = UserSerializer()
+    employee_detail = UserSerializer(source='employee', read_only=True)
 
     class Meta:
         model = ManagementTeamMember
@@ -26,7 +26,7 @@ class ManagementTeamMemberSerializer(serializers.ModelSerializer):
 
 
 class SupportTeamMemberSerializer(serializers.ModelSerializer):
-    employee = UserSerializer()
+    employee_detail = UserSerializer(source='employee', read_only=True)
 
     class Meta:
         model = SupportTeamMember
@@ -34,7 +34,7 @@ class SupportTeamMemberSerializer(serializers.ModelSerializer):
 
 
 class ClientSerializer(serializers.ModelSerializer):
-    # sales_contact = SalesTeamMemberSerializer()
+    sales_contact_detail = SalesTeamMemberSerializer(source='sales_contact', read_only=True)
 
     class Meta:
         model = Client
@@ -48,9 +48,9 @@ class EventStatusSerializer(serializers.ModelSerializer):
 
 
 class EventSerializer(serializers.ModelSerializer):
-    client = ClientSerializer()
-    support_contact = SupportTeamMemberSerializer()
-    event_status = EventStatusSerializer()
+    client_detail = ClientSerializer(source='client', read_only=True)
+    support_contact_detail = SupportTeamMemberSerializer(source='client', read_only=True)
+    event_status_detail = EventStatusSerializer(source='event_status', read_only=True)
 
     class Meta:
         model = Event
@@ -58,8 +58,8 @@ class EventSerializer(serializers.ModelSerializer):
 
 
 class ContractSerializer(serializers.ModelSerializer):
-    sales_contact = SalesTeamMemberSerializer()
-    client = ClientSerializer()
+    sales_contact_detail = SalesTeamMemberSerializer(source='sales_contact', read_only=True)
+    client_detail = ClientSerializer(source='client', read_only=True)
 
     class Meta:
         model = Contract

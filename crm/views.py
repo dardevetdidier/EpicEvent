@@ -9,6 +9,13 @@ from crm.models import Client, Contract
 from crm.serializers import ClientSerializer, ContractSerializer
 
 
+def get_object(element, pk):
+    try:
+        return element.objects.get(pk=pk)
+    except element.DoesNotExist:
+        raise Http404
+
+
 class ClientList(APIView):
     """List of all clients, or create a new client """
     def get(self, request):
@@ -28,28 +35,21 @@ class ClientList(APIView):
 class ClientDetail(APIView):
     """Retrieve, update and delete a client instance"""
 
-    @staticmethod
-    def get_object(pk):
-        try:
-            return Client.objects.get(pk=pk)
-        except Client.DoesNotExist:
-            raise Http404
-
     def get(self, request, pk):
-        client = self.get_object(pk)
+        client = get_object(Client, pk)
         serializer = ClientSerializer(client)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request, pk):
-        client = self.get_object(pk)
-        serializer = ClientSerializer(client, data=request.data, partial=True)
+        client = get_object(Client, pk)
+        serializer = ClientSerializer(client, data=self.request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
-        client = self.get_object(pk)
+        client = get_object(Client, pk)
         client.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -69,6 +69,24 @@ class ContractList(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class ContractDetail(APIView):
+    """Retrieve, update or delete a contract instance"""
 
+    def get(self, request, pk):
+        contract = get_object(Contract, pk)
+        serializer = ContractSerializer(contract)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
+    def put(self, request, pk):
+        contract = get_object(Contract, pk)
+        serializer = ContractSerializer(contract, data=self.request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        contract = get_object(Contract, pk)
+        contract.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
