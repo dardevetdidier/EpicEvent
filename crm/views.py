@@ -68,12 +68,12 @@ class ContractList(APIView):
         serializer = ContractSerializer(contracts, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def post(self, request):
-        serializer = ContractSerializer(data=self.request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    # def post(self, request):
+    #     serializer = ContractSerializer(data=self.request.data)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ContractDetail(APIView):
@@ -98,18 +98,18 @@ class ContractDetail(APIView):
 
 
 class EventList(APIView):
-    """List of all events, or create a new event"""
+    """List of all events"""
     def get(self, request):
         events = Event.objects.all()
         serializer = EventSerializer(events, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def post(self, request):
-        serializer = EventSerializer(data=self.request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    # def post(self, request):
+    #     serializer = EventSerializer(data=self.request.data)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class EventDetail(APIView):
@@ -131,3 +131,39 @@ class EventDetail(APIView):
         event = get_object(Event, pk)
         event.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ContractsClientList(APIView):
+    """List of contracts related to a client, or create a contract for a client"""
+    def get(self, request, pk):
+        client = get_object(Client, pk)
+        contracts = Contract.objects.filter(client_id=client.pk)
+        serializer = ContractSerializer(contracts, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, pk):
+        client = get_object(Client, pk)
+        serializer = ContractSerializer(data=self.request.data)
+        if serializer.is_valid():
+            serializer.validated_data["client"] = client
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class EventsClientList(APIView):
+    """List of events related to a client, or create an event for a client"""
+    def get(self, request, pk):
+        client = get_object(Client, pk)
+        events = Event.objects.filter(client_id=client.pk)
+        serializer = EventSerializer(events, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, pk):
+        client = get_object(Client, pk)
+        serializer = EventSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.validated_data["client"] = client
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

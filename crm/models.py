@@ -75,6 +75,8 @@ class Contract(models.Model):
                                       on_delete=models.CASCADE)
     client = models.ForeignKey(to=Client,
                                on_delete=models.PROTECT,
+                               blank=True,
+                               null=True
                                )
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
@@ -104,7 +106,9 @@ class EventStatus(models.Model):
 class Event(models.Model):
     id = models.AutoField(auto_created=True, primary_key=True)
     client = models.ForeignKey(to=Client,
-                               on_delete=models.PROTECT)
+                               on_delete=models.PROTECT,
+                               blank=True,
+                               null=True)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
     support_contact = models.ForeignKey(to=SupportTeamMember,
