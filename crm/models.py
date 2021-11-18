@@ -2,7 +2,8 @@ from django.contrib.auth.models import User
 from django.db import models
 
 
-STATUS_CHOICES = [('upcoming', 'upcoming'), ('in progress', 'in progress'), ('completed', 'completed')]
+
+CLIENT_STATUS = [("prospect", "prospect"), ("client", "client")]
 
 
 class ManagementTeamMember(models.Model):
@@ -61,6 +62,9 @@ class Client(models.Model):
                                       default=None,
                                       on_delete=models.CASCADE,
                                       )
+    status = models.CharField(max_length=10,
+                              choices=CLIENT_STATUS,
+                              default="prospect")
 
     def __str__(self):
         return f"{self.last_name} {self.first_name}"
@@ -90,9 +94,7 @@ class Contract(models.Model):
 
 class EventStatus(models.Model):
     id = models.AutoField(auto_created=True, primary_key=True)
-    status = models.CharField(max_length=15,
-                              choices=STATUS_CHOICES,
-                              default="upcoming")
+    status = models.CharField(max_length=150)
     notes = models.TextField(blank=True, null=True)
 
     def __str__(self):
