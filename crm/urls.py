@@ -11,4 +11,6 @@ urlpatterns = [
     path('contracts/<int:pk>/', views.ContractDetail.as_view(), name="contract-detail"),
     path('events/', views.EventList.as_view(), name='events'),
     path('events/<int:pk>/', views.EventDetail.as_view(), name='event-detail'),
+    path('event-status/', views.EventStatusList.as_view(), name='event-status'),
+    path('event-status/<int:pk>/', views.EventStatusDetail.as_view(), name='event-status-detail'),
 ]

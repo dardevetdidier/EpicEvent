@@ -59,8 +59,9 @@ class Client(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
     sales_contact = models.ForeignKey(to=SalesTeamMember,
-                                      default=None,
                                       on_delete=models.CASCADE,
+                                      blank=True,
+                                      null=True
                                       )
     status = models.CharField(max_length=10,
                               choices=CLIENT_STATUS,
