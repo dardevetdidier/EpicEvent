@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import permissions
 from .models import Client
 
@@ -14,10 +15,12 @@ class ClientSalesTeamAllSupportTeamRead(permissions.BasePermission):
             return True
 
     def has_object_permission(self, request, view, obj):
+
         if request.method == 'GET' and request.user.has_perm('crm.view_client'):
             return True
 
-        if request.method == 'PUT' and request.user.has_perm('crm.change_client'):
+        if request.method == 'PUT' and request.user.has_perm('crm.change_client') \
+                and request.user == obj.sales_contact.employee:
             return True
 
         if request.method == 'DELETE' and request.user.has_perm('crm.delete_client'):
