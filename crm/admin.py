@@ -91,6 +91,7 @@ class EventAdmin(admin.ModelAdmin):
     list_per_page = 10
 
 
+@admin.register(EventStatus)
 class EventStatusAdmin(admin.ModelAdmin):
     list_display = [
         "id",

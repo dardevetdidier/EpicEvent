@@ -120,10 +120,12 @@ class Event(models.Model):
                                         )
     event_status = models.ForeignKey(to=EventStatus,
                                      on_delete=models.CASCADE,
+                                     blank=True,
+                                     null=True
                                      )
     attendees = models.IntegerField(blank=True, null=True)
     event_date = models.DateTimeField()
-    notes = models.TextField()
+    notes = models.TextField(blank=True)
 
     def __str__(self):
         return f"Event n° {self.id}"

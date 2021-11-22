@@ -34,7 +34,7 @@ class SupportTeamMemberSerializer(serializers.ModelSerializer):
 
 
 class ClientSerializer(serializers.ModelSerializer):
-    sales_contact_detail = SalesTeamMemberSerializer(source='sales_contact', read_only=True)
+    # sales_contact_detail = SalesTeamMemberSerializer(source='sales_contact', read_only=True)
 
     class Meta:
         model = Client
