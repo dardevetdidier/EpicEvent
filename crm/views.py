@@ -1,3 +1,4 @@
+from django.db.models import ProtectedError
 from django.http import Http404
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated
@@ -7,8 +8,8 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from crm.models import Client, Contract, Event, EventStatus, SalesTeamMember
-from crm.serializers import ClientSerializer, ContractSerializer, EventSerializer, EventStatusSerializer,\
-    SalesTeamMemberSerializer
+from crm.serializers import ClientSerializer, ContractSerializer, EventSerializer, EventStatusSerializer
+from crm.permissions import ClientSalesTeamAllSupportTeamRead
 
 
 def get_object(element, pk):
@@ -53,15 +54,17 @@ class ClientList(APIView):
 
 class ClientDetail(APIView):
     """Retrieve, update and delete a client instance"""
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, ClientSalesTeamAllSupportTeamRead]
 
     def get(self, request, pk):
         client = get_object(Client, pk)
+        self.check_object_permissions(request, obj=client)
         serializer = ClientSerializer(client)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request, pk):
         client = get_object(Client, pk)
+        self.check_object_permissions(request, obj=client)
         serializer = ClientSerializer(client, data=self.request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -69,7 +72,13 @@ class ClientDetail(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
+        contracts = Contract.objects.all()
         client = get_object(Client, pk)
+        self.check_object_permissions(request, obj=client)
+        for contract in contracts:
+            if client == contract.client:
+                return Response(status=status.HTTP_403_FORBIDDEN)
+
         client.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 

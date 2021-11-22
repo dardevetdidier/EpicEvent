@@ -10,9 +10,18 @@ class ClientSalesTeamAllSupportTeamRead(permissions.BasePermission):
                   Support team memeber is allowed to Read
     """
     def has_permission(self, request, view):
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             return True
 
     def has_object_permission(self, request, view, obj):
-        if request.user.has_perm('crm.view_client'):
+        if request.method == 'GET' and request.user.has_perm('crm.view_client'):
             return True
+
+        if request.method == 'PUT' and request.user.has_perm('crm.change_client'):
+            return True
+
+        if request.method == 'DELETE' and request.user.has_perm('crm.delete_client'):
+            return True
+
+        return False
+
