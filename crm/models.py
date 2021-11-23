@@ -77,7 +77,9 @@ class Client(models.Model):
 class Contract(models.Model):
     id = models.AutoField(auto_created=True, primary_key=True)
     sales_contact = models.ForeignKey(to=SalesTeamMember,
-                                      on_delete=models.CASCADE)
+                                      on_delete=models.CASCADE,
+                                      blank=True,
+                                      null=True)
     client = models.ForeignKey(to=Client,
                                on_delete=models.PROTECT,
                                blank=True,

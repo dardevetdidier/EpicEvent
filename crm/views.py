@@ -9,7 +9,7 @@ from rest_framework import status
 
 from crm.models import Client, Contract, Event, EventStatus, SalesTeamMember
 from crm.serializers import ClientSerializer, ContractSerializer, EventSerializer, EventStatusSerializer
-from crm.permissions import ClientSalesTeamAllSupportTeamRead
+from crm.permissions import ClientSalesTeamAllSupportTeamRead, ContractSalesTeamAllSupportTeamRead
 
 
 def get_object(element, pk):
@@ -102,15 +102,17 @@ class ContractList(APIView):
 
 class ContractDetail(APIView):
     """Retrieve, update or delete a contract instance"""
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, ContractSalesTeamAllSupportTeamRead]
 
     def get(self, request, pk):
         contract = get_object(Contract, pk)
+        self.check_object_permissions(request, obj=contract)
         serializer = ContractSerializer(contract)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request, pk):
         contract = get_object(Contract, pk)
+        self.check_object_permissions(request, obj=contract)
         serializer = ContractSerializer(contract, data=self.request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -119,6 +121,7 @@ class ContractDetail(APIView):
 
     def delete(self, request, pk):
         contract = get_object(Contract, pk)
+        self.check_object_permissions(request, obj=contract)
         contract.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -175,12 +178,17 @@ class ContractsClientList(APIView):
 
     def post(self, request, pk):
         client = get_object(Client, pk)
+        print(client.sales_contact.employee)
+        print(self.request.user)
         serializer = ContractSerializer(data=self.request.data)
-        if serializer.is_valid():
-            serializer.validated_data["client"] = client
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if self.request.user.has_perm('crm.add_contract') and self.request.user == client.sales_contact.employee:
+            if serializer.is_valid():
+                serializer.validated_data["client"] = client
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            raise PermissionDenied
 
 
 class EventsClientList(APIView):
