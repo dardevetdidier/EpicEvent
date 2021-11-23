@@ -34,7 +34,7 @@ class ContractSalesTeamAllSupportTeamRead(permissions.BasePermission):
     Contract Permissions.
     view level: Checks if user is authenticated.
     object level: Sales Team member is allowed to make all CRUD operations
-                  Support team memeber is allowed to Read
+                  Support team member is allowed to Read
     """
     def has_permission(self, request, view):
         if request.user.is_authenticated:
@@ -53,3 +53,34 @@ class ContractSalesTeamAllSupportTeamRead(permissions.BasePermission):
             return True
 
         return False
+
+
+class EventSalesAndSupportTeamsAll(permissions.BasePermission):
+    """
+    Event Permissions.
+    view level: Checks if user is authenticated.
+    object level: Sales and Support Team member is allowed to make all CRUD operations
+
+    """
+    def has_permission(self, request, view):
+        if request.user.is_authenticated:
+            return True
+
+    def has_object_permission(self, request, view, obj):
+        print(obj.client.sales_contact.employee)
+        print(obj.support_contact.employee)
+        if request.method == 'GET' and request.user.has_perm('crm.view_event'):
+            return True
+
+        if request.method == 'PUT' and request.user.has_perm('crm.change_event') \
+                and (request.user == obj.client.sales_contact.employee or request.user == obj.support_contact.employee):
+            return True
+
+        if request.method == 'DELETE' and request.user.has_perm('crm.delete_event') \
+                and request.user == obj.client.sales_contact.employee:
+            return True
+
+        return False
+
+
+

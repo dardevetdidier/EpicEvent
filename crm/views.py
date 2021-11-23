@@ -9,7 +9,10 @@ from rest_framework import status
 
 from crm.models import Client, Contract, Event, EventStatus, SalesTeamMember
 from crm.serializers import ClientSerializer, ContractSerializer, EventSerializer, EventStatusSerializer
-from crm.permissions import ClientSalesTeamAllSupportTeamRead, ContractSalesTeamAllSupportTeamRead
+from crm.permissions import \
+    ClientSalesTeamAllSupportTeamRead, \
+    ContractSalesTeamAllSupportTeamRead, \
+    EventSalesAndSupportTeamsAll
 
 
 def get_object(element, pk):
@@ -145,15 +148,17 @@ class EventList(APIView):
 
 class EventDetail(APIView):
     """Retrieve, update or delete an event instance"""
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, EventSalesAndSupportTeamsAll]
 
     def get(self, request, pk):
         event = get_object(Event, pk)
+        self.check_object_permissions(request, obj=event)
         serializer = EventSerializer(event)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request, pk):
         event = get_object(Event, pk)
+        self.check_object_permissions(request, obj=event)
         serializer = EventSerializer(event, data=self.request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -162,6 +167,7 @@ class EventDetail(APIView):
 
     def delete(self, request, pk):
         event = get_object(Event, pk)
+        self.check_object_permissions(request, obj=event)
         event.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -204,11 +210,14 @@ class EventsClientList(APIView):
     def post(self, request, pk):
         client = get_object(Client, pk)
         serializer = EventSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.validated_data["client"] = client
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if self.request.user.has_perm('crm.add_event') and self.request.user == client.saless_contact.employee:
+            if serializer.is_valid():
+                serializer.validated_data["client"] = client
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            raise PermissionDenied
 
 
 class EventStatusList(APIView):
