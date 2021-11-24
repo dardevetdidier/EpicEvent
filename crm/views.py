@@ -1,4 +1,3 @@
-from django.db.models import ProtectedError
 from django.http import Http404
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated
@@ -12,7 +11,8 @@ from crm.serializers import ClientSerializer, ContractSerializer, EventSerialize
 from crm.permissions import \
     ClientSalesTeamAllSupportTeamRead, \
     ContractSalesTeamAllSupportTeamRead, \
-    EventSalesAndSupportTeamsAll
+    EventSalesTeamAllSupportTeamsReadCreateUpdate, \
+    EventStatusSalesAndSupportTeamAll
 
 
 def get_object(element, pk):
@@ -95,13 +95,6 @@ class ContractList(APIView):
         serializer = ContractSerializer(contracts, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    # def post(self, request):
-    #     serializer = ContractSerializer(data=self.request.data)
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class ContractDetail(APIView):
     """Retrieve, update or delete a contract instance"""
@@ -138,17 +131,10 @@ class EventList(APIView):
         serializer = EventSerializer(events, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    # def post(self, request):
-    #     serializer = EventSerializer(data=self.request.data)
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class EventDetail(APIView):
     """Retrieve, update or delete an event instance"""
-    permission_classes = [IsAuthenticated, EventSalesAndSupportTeamsAll]
+    permission_classes = [IsAuthenticated, EventSalesTeamAllSupportTeamsReadCreateUpdate]
 
     def get(self, request, pk):
         event = get_object(Event, pk)
@@ -184,8 +170,6 @@ class ContractsClientList(APIView):
 
     def post(self, request, pk):
         client = get_object(Client, pk)
-        print(client.sales_contact.employee)
-        print(self.request.user)
         serializer = ContractSerializer(data=self.request.data)
         if self.request.user.has_perm('crm.add_contract') and self.request.user == client.sales_contact.employee:
             if serializer.is_valid():
@@ -239,15 +223,17 @@ class EventStatusList(APIView):
 
 class EventStatusDetail(APIView):
     """Retrieve, update or delete an event status"""
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, EventStatusSalesAndSupportTeamAll]
 
     def get(self, request, pk):
         event_status = get_object(EventStatus, pk)
+        self.check_object_permissions(request, obj=event_status)
         serializer = EventStatusSerializer(event_status)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request, pk):
         event_status = get_object(EventStatus, pk)
+        self.check_object_permissions(request, obj=event_status)
         serializer = EventStatusSerializer(event_status, data=self.request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -256,5 +242,6 @@ class EventStatusDetail(APIView):
 
     def delete(self, request, pk):
         event_status = get_object(EventStatus, pk)
+        self.check_object_permissions(request, obj=event_status)
         event_status.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
