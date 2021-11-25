@@ -194,7 +194,7 @@ class EventsClientList(APIView):
     def post(self, request, pk):
         client = get_object(Client, pk)
         serializer = EventSerializer(data=request.data)
-        if self.request.user.has_perm('crm.add_event') and self.request.user == client.saless_contact.employee:
+        if self.request.user.has_perm('crm.add_event') and self.request.user == client.sales_contact.employee:
             if serializer.is_valid():
                 serializer.validated_data["client"] = client
                 serializer.save()

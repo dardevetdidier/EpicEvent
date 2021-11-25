@@ -83,11 +83,12 @@ class Contract(models.Model):
     client = models.ForeignKey(to=Client,
                                on_delete=models.PROTECT,
                                blank=True,
-                               null=True
+                               null=True,
+                               related_name="contracts"
                                )
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
-    status = models.BooleanField(null=True)
+    signed_status = models.BooleanField(null=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     payment_due = models.DateTimeField()
 
