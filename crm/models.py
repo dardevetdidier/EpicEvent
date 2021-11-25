@@ -2,22 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 
 
-
 CLIENT_STATUS = [("prospect", "prospect"), ("client", "client")]
-
-
-class ManagementTeamMember(models.Model):
-    id = models.AutoField(auto_created=True, primary_key=True)
-    employee = models.ForeignKey(to=User,
-                                 default=None,
-                                 on_delete=models.CASCADE)
-    date_created = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.employee.last_name} {self.employee.first_name}"
-
-    class Meta:
-        verbose_name = "Management Team Member"
 
 
 class SalesTeamMember(models.Model):
@@ -137,5 +122,3 @@ class Event(models.Model):
 
     class Meta:
         ordering = ["event_date"]
-
-

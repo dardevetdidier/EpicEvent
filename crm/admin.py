@@ -1,38 +1,46 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.models import User
 
-from .models import ManagementTeamMember, SalesTeamMember, SupportTeamMember, Client, Contract, EventStatus, Event
+from .models import SalesTeamMember, SupportTeamMember, Client, Contract, EventStatus, Event
+
+
+class SalesTeamInline(admin.TabularInline):
+    model = SalesTeamMember
+    extra = 1
+
+
+class SupportTeamInline(admin.TabularInline):
+    model = SupportTeamMember
+    extra = 1
 
 
 class ContractInline(admin.TabularInline):
     model = Contract
+    extra = 1
 
 
 class ClientInline(admin.TabularInline):
     model = Client
+    extra = 1
 
 
 class EventInline(admin.TabularInline):
     model = Event
+    extra = 1
 
 
-class UserAdmin(admin.ModelAdmin):
-    list_display = ['last name', 'first_name', 'username', 'email']
+UserAdmin.list_display = ['id', 'last_name', 'first_name', 'username', 'email']
 
 
 @admin.register(SalesTeamMember)
 class SalesTeamAdmin(admin.ModelAdmin):
     list_display = ['id', 'employee', 'date_created']
-    inlines = [ContractInline, ClientInline, ]
+    inlines = [ContractInline, ClientInline]
 
 
 @admin.register(SupportTeamMember)
 class SupportTeamAdmin(admin.ModelAdmin):
-    list_display = ['id', 'employee', 'date_created']
-    inlines = [EventInline, ]
-
-
-@admin.register(ManagementTeamMember)
-class ManagementTeamAdmin(admin.ModelAdmin):
     list_display = ['id', 'employee', 'date_created']
 
 
@@ -102,6 +110,8 @@ class EventStatusAdmin(admin.ModelAdmin):
 
 
 
+admin.site.unregister(User)
+admin.site.register(User, UserAdmin)
 # admin.site.register(ManagementTeamMember)
 # admin.site.register(SalesTeamMember)
 # admin.site.register(SupportTeamMember)

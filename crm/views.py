@@ -41,12 +41,21 @@ class ClientList(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
+        clients = Client.objects.all()
         serializer = ClientSerializer(data=self.request.data)
+
         # Check permission
         if self.request.user.has_perm('crm.add_client'):
             if serializer.is_valid():
+                for client in clients:
+                    if serializer.validated_data["email"] == client.email:
+                        return Response("Client already exists")
+
                 serializer.save()
-                sales_member = SalesTeamMember.objects.filter(employee__exact=self.request.user)[0]
+                try:
+                    sales_member = SalesTeamMember.objects.filter(employee__exact=self.request.user)[0]
+                except IndexError:
+                    return Response("Can't create a Client. There're no sales team members in database")
                 serializer.validated_data["sales_contact"] = sales_member
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)

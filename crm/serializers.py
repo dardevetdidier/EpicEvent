@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Client, SalesTeamMember, SupportTeamMember, ManagementTeamMember, EventStatus, Event, Contract
+from .models import Client, SalesTeamMember, SupportTeamMember, EventStatus, Event, Contract
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -17,14 +17,6 @@ class SalesTeamMemberSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class ManagementTeamMemberSerializer(serializers.ModelSerializer):
-    employee_detail = UserSerializer(source='employee', read_only=True)
-
-    class Meta:
-        model = ManagementTeamMember
-        fields = "__all__"
-
-
 class SupportTeamMemberSerializer(serializers.ModelSerializer):
     employee_detail = UserSerializer(source='employee', read_only=True)
 
@@ -34,7 +26,6 @@ class SupportTeamMemberSerializer(serializers.ModelSerializer):
 
 
 class ClientSerializer(serializers.ModelSerializer):
-    # sales_contact_detail = SalesTeamMemberSerializer(source='sales_contact', read_only=True)
 
     class Meta:
         model = Client
