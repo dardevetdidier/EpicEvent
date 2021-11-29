@@ -145,6 +145,11 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=30)
 }
 
+LOG_PATH = os.path.join(BASE_DIR, 'logs')
+
+if not os.path.exists(LOG_PATH):
+    os.mkdir(LOG_PATH)
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
