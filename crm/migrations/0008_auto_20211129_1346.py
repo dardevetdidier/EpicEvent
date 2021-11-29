@@ -81,10 +81,10 @@ def create_groups(apps, schema_migration):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('authentication', '0001_initial'),
-        ('crm', '0001_initial'),
+        ('crm', '0007_delete_managementteammember'),
     ]
 
     operations = [
         migrations.RunPython(create_groups)
     ]
+
