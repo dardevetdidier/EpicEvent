@@ -51,11 +51,12 @@ class ClientList(APIView):
                     if serializer.validated_data["email"] == client.email:
                         return Response("Client already exists")
 
-                serializer.save()
+
                 try:
                     sales_member = SalesTeamMember.objects.filter(employee__exact=self.request.user)[0]
                 except IndexError:
                     return Response("Can't create a Client. There're no sales team members in database")
+                serializer.save()
                 serializer.validated_data["sales_contact"] = sales_member
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
