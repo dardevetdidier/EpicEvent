@@ -162,6 +162,8 @@ class EventDetail(APIView):
 
     def delete(self, request, pk):
         event = get_object(Event, pk)
+        print(event.client.sales_contact.employee)
+        print(self.request.user)
         self.check_object_permissions(request, obj=event)
         event.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -183,6 +185,7 @@ class ContractsClientList(APIView):
         if self.request.user.has_perm('crm.add_contract') and self.request.user == client.sales_contact.employee:
             if serializer.is_valid():
                 serializer.validated_data["client"] = client
+                serializer.validated_data["sales_contact"] = client.sales_contact
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

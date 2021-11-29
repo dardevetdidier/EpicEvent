@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import os
 import datetime
-
 from dotenv import load_dotenv
 from pathlib import Path
 
@@ -44,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'crm',
+    'authentication'
     ]
 
 MIDDLEWARE = [

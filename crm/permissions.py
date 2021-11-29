@@ -79,7 +79,7 @@ class EventSalesTeamAllSupportTeamsReadCreateUpdate(permissions.BasePermission):
                      (request.user == obj.support_contact.employee and obj.event_date >= timezone.now())):
             return True
 
-        if request.method == 'DELETE' and request.user.groups.filter(name="Sales team") \
+        if request.method == 'DELETE' and request.user.groups.filter(name="Sales Team") \
                 and request.user == obj.client.sales_contact.employee:
             return True
 
@@ -99,16 +99,16 @@ class EventStatusSalesAndSupportTeamAll(permissions.BasePermission):
             return True
 
     def has_object_permission(self, request, view, obj):
-        if request.method == 'GET' and (request.user.groups.filter(name="Sales team") or
-                                        request.user.groups.filter(name="Support team")):
+        if request.method == 'GET' and (request.user.groups.filter(name="Sales Team") or
+                                        request.user.groups.filter(name="Support Team")):
             return True
 
-        if request.method == 'PUT' and (request.user.groups.filter(name="Sales team") or
-                                        request.user.groups.filter(name="Support team")):
+        if request.method == 'PUT' and (request.user.groups.filter(name="Sales Team") or
+                                        request.user.groups.filter(name="Support Team")):
             return True
 
-        if request.method == 'DELETE' and (request.user.groups.filter(name="Sales team") or
-                                           request.user.groups.filter(name="Support team")):
+        if request.method == 'DELETE' and (request.user.groups.filter(name="Sales Team") or
+                                           request.user.groups.filter(name="Support Team")):
             return True
 
         return False
