@@ -5,7 +5,7 @@
 1. [General Info](#general-info)
 2. [Technologies](#technologies)
 3. [Installation](#installation)
-5. [API endpoints](#API endpoints)
+5. [API endpoints](#API endpoints and documentation)
 
 ## General Info
 ***
@@ -47,20 +47,31 @@ We will see later how to configure PostgreSQL in django.
 `$ cd your/project/directory`\
 `$ python -m venv venv`\
 `$ source venv/Script/activate`
+3. Install required packages : `$ pip install -r requirements.txt`
 
-3. Create a file '.env' at the root of the project. This file will contain the sensitive data of django settings.
-4. Open '.env' file and replace example values with right ones without quotes:
+
+4. Create a file '.env' at the root of the project.\
+This file will contain the sensitive data of django settings.
+
+
+5. Open '.env' file and replace example values with right ones without quotes:
 
    * SECRET_KEY=ThedjangosecretKey
    * DB_USER=Your user configured in PostgreSQL
    * DB_PASSWORD=Your password configured in PostgreSQL
    
 
-5. Apply migrations. The project contains a custom migration that creates groups used for permissions. To apply this migration enter the following:
+6. Apply migrations:\
+The project contains a custom migration that creates groups used for permissions.
+To apply this migration enter the following:\
 `$ python manage.py migrate 0007 && python manage.py migrate`
-6. Create admin user:
+
+
+7. Create admin user:\
 `$ python manage.py createsuperuser`
-7. Run the server with `$ python manage.py runserver
+
+
+8. Run the server with `$ python manage.py runserver`
 
 Admin user can now access admin interface in a browser with <http://127.0.0.1:8000/admin/>
 
