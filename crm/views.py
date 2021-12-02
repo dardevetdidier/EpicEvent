@@ -2,6 +2,10 @@ from django.http import Http404
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated
 
+
+from django_filters.rest_framework import DjangoFilterBackend
+import django_filters.rest_framework
+from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -36,7 +40,21 @@ class ClientList(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        clients = Client.objects.all()
+        get_data = request.query_params
+
+        param_sales_contact = get_data.get("sales_contact", None)
+        param_status = get_data.get("status", None)
+
+        if param_sales_contact and param_status:
+            clients = Client.objects.filter(sales_contact=int(get_data['sales_contact']),
+                                            status=get_data['status'])
+        elif param_sales_contact:
+            clients = Client.objects.filter(sales_contact=int(get_data['sales_contact']))
+        elif param_status:
+            clients = Client.objects.filter(status=get_data['status'])
+
+        else:
+            clients = Client.objects.all()
         serializer = ClientSerializer(clients, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -96,14 +114,13 @@ class ClientDetail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class ContractList(APIView):
-    """List of all contracts, or create a new contract"""
+class ContractList(generics.ListAPIView):
+    """List of all contracts. Can be filtered by 'sales_contact', 'client' or 'signed_status'"""
     permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        contracts = Contract.objects.all()
-        serializer = ContractSerializer(contracts, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    queryset = Contract.objects.all()
+    serializer_class = ContractSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['sales_contact', 'client', 'signed_status']
 
 
 class ContractDetail(APIView):
@@ -137,7 +154,19 @@ class EventList(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        events = Event.objects.all()
+        get_data = self.request.query_params
+        print(get_data)
+        param_support_contact = get_data.get("support_contact", None)
+        param_event_status = get_data.get("event_status", None)
+        if param_support_contact and param_event_status:
+            events = Event.objects.filter(support_contact_id=int(param_support_contact),
+                                          event_status_id=int(param_event_status))
+        elif param_support_contact:
+            events = Event.objects.filter(support_contact_id=int(param_support_contact))
+        elif param_event_status:
+            events = Event.objects.filter(event_status_id=int(param_event_status))
+        else:
+            events = Event.objects.all()
         serializer = EventSerializer(events, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -200,6 +229,7 @@ class EventsClientList(APIView):
 
     def get(self, request, pk):
         client = get_object(Client, pk)
+
         events = Event.objects.filter(client_id=client.pk)
         serializer = EventSerializer(events, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
