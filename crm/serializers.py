@@ -26,6 +26,7 @@ class SupportTeamMemberSerializer(serializers.ModelSerializer):
 
 
 class ClientSerializer(serializers.ModelSerializer):
+    sales_contact_detail = SalesTeamMemberSerializer(source='sales_contact', read_only=True)
 
     class Meta:
         model = Client
@@ -40,7 +41,7 @@ class EventStatusSerializer(serializers.ModelSerializer):
 
 class EventSerializer(serializers.ModelSerializer):
     client_detail = ClientSerializer(source='client', read_only=True)
-    support_contact_detail = SupportTeamMemberSerializer(source='client', read_only=True)
+    support_contact_detail = SupportTeamMemberSerializer(source='support_contact', read_only=True)
     event_status_detail = EventStatusSerializer(source='event_status', read_only=True)
 
     class Meta:

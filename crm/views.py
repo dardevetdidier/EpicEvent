@@ -1,5 +1,6 @@
 from django.http import Http404
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.filters import SearchFilter
 from rest_framework.permissions import IsAuthenticated
 
 
@@ -69,7 +70,6 @@ class ClientList(APIView):
                     if serializer.validated_data["email"] == client.email:
                         return Response("Client already exists")
 
-
                 try:
                     sales_member = SalesTeamMember.objects.filter(employee__exact=self.request.user)[0]
                 except IndexError:
@@ -119,8 +119,9 @@ class ContractList(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Contract.objects.all()
     serializer_class = ContractSerializer
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_fields = ['sales_contact', 'client', 'signed_status']
+    search_fields = ['sales_contact__employee__last_name', 'client__last_name', 'signed_status']
 
 
 class ContractDetail(APIView):
@@ -149,26 +150,14 @@ class ContractDetail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class EventList(APIView):
-    """List of all events"""
+class EventList(generics.ListAPIView):
+    """List of all events."""
     permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        get_data = self.request.query_params
-        print(get_data)
-        param_support_contact = get_data.get("support_contact", None)
-        param_event_status = get_data.get("event_status", None)
-        if param_support_contact and param_event_status:
-            events = Event.objects.filter(support_contact_id=int(param_support_contact),
-                                          event_status_id=int(param_event_status))
-        elif param_support_contact:
-            events = Event.objects.filter(support_contact_id=int(param_support_contact))
-        elif param_event_status:
-            events = Event.objects.filter(event_status_id=int(param_event_status))
-        else:
-            events = Event.objects.all()
-        serializer = EventSerializer(events, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    queryset = Event.objects.all()
+    serializer_class = EventSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_fields = ['client', 'support_contact', 'event_status']
+    search_fields = ['event_date', 'event_status__status', 'client__last_name', 'support_contact__employee__last_name']
 
 
 class EventDetail(APIView):
