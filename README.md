@@ -5,7 +5,7 @@
 1. [General Info](#general-info)
 2. [Technologies](#technologies)
 3. [Installation](#installation)
-5. [API endpoints](#API endpoints and documentation)
+5. [API endpoints](#API-endpoints-and-documentation)
 
 ## General Info
 ***
